@@ -1,14 +1,17 @@
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include "glad/glad.h"
 #include "glfw/glfw3.h"
 
 #include "TextRenderer.h"
+#include "CircleRenderer.h"
 
 class BezierCurve {
 public:
 	void RegisterPoint(float x, float y) {
 		points.push_back({ x,y });
+		std::sort(points.begin(), points.end(), [](glm::vec2 a, glm::vec2 b) {return a.x < b.x; });
 	}
 
 	void ClearPoints() {
@@ -24,7 +27,7 @@ public:
 		std::cout << std::endl << std::endl << std::endl;
 	}
 
-private:
+public:
 	std::vector<glm::vec2> points;
 };
 
@@ -34,7 +37,7 @@ int main ()
 
 	if (!glfwInit())
 		std::cout << "Error : could not initilize GLFW";
-	int width = 1280;
+	int width = 1000;
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	window = glfwCreateWindow(width, width * 9/16, "Hello World", NULL, NULL);
 	if (!window)
@@ -67,6 +70,7 @@ int main ()
 		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
 	InitTextRendering(face);
+	InitCircleRendering(32);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -78,11 +82,13 @@ int main ()
 		glfwPollEvents();
 
 		// Clear the colorbuffer
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		RenderText("This is sample text", 25.0f, 25.0f, 1.0f, {0.5, 0.8f, 0.2f});
-		RenderText("(C) LearnOpenGL.com", 200, 200, 0.5f, {0.3, 0.7f, 0.9f});
+		//RenderText("Hello", 100, 100, 1, glm::vec3(1.0f, 1.0f, 1.0f));
+
+		for(glm::vec2& vec : curve.points)
+			RenderCircle(glm::vec2(vec.x, vec.y), 5);
 
 		// Swap the buffers
 		glfwSwapBuffers(window);
@@ -106,6 +112,9 @@ int main ()
 
 		if (glfwGetKey(window, GLFW_KEY_X))
 			curve.DebugPoints();
+
+		if (glfwGetKey(window, GLFW_KEY_C))
+			curve.ClearPoints();
 	}
 
 	glfwTerminate();

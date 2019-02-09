@@ -13,11 +13,10 @@ std::map<GLchar, Character> Characters;
 static GLuint VAO;
 static GLuint VBO;
 
-unsigned int shaderID;
+static unsigned int shaderID;
 
 void InitTextRendering(FT_Face& face)
 {
-	//TODO
 	const char* vShaderCode = 
 		"#version 330 core\n"
 		"layout(location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>\n"
@@ -65,7 +64,7 @@ void InitTextRendering(FT_Face& face)
 
 	glUseProgram(shaderID);
 
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(640), 0.0f, static_cast<GLfloat>(480));
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(1000), 0.0f, static_cast<GLfloat>(1000 * 9 / 16));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 
@@ -132,7 +131,7 @@ void InitTextRendering(FT_Face& face)
 
 }
 
-void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, vec3 color)
+void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 {
 	// Activate corresponding render state	
 	glUseProgram(shaderID);
