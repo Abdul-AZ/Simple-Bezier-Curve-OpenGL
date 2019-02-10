@@ -22,4 +22,4 @@ Steps on building in windows:
 1. Open commandline window on project directory.
 2. Type "premake5 vsYOUR_VISUAL_STUDIO_VERSION", so for me it was "premake5 vs2017".
 3. Open the newly generated Buid directory and open Simple-Bezier-Curve-OpenGL.sln.
-4. Build and run the executable in VisialStudio
+4. Build and run the executable in VisualStudio
