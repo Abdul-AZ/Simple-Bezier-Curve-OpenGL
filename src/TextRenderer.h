@@ -10,6 +10,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-void InitTextRendering(FT_Face& face);
+void InitTextRendering();
 
 void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);

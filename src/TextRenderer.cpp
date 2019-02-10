@@ -15,8 +15,18 @@ static GLuint VBO;
 
 static GLuint shaderID;
 
-void InitTextRendering(FT_Face& face)
+void InitTextRendering()
 {
+	FT_Library  library;
+
+	if (FT_Init_FreeType(&library)){
+		std::cout << "Error : could not initilize freetype";
+	}
+
+	FT_Face face;
+	if (FT_New_Face(library, "../../fonts/arial.ttf", 0, &face))
+		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+
 	const char* vShaderCode = 
 		"#version 330 core\n"
 		"layout(location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>\n"
@@ -114,8 +124,8 @@ void InitTextRendering(FT_Face& face)
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	// Destroy FreeType once we're finished
-	//FT_Done_Face(face);
-	//FT_Done_FreeType(ft);
+	FT_Done_Face(face);
+	FT_Done_FreeType(library);
 
 
 	// Configure VAO/VBO for texture quads

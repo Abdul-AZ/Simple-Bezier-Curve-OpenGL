@@ -1,6 +1,9 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <string>
+#include <sstream>
+#include <iomanip>
 #include "glad/glad.h"
 #include "glfw/glfw3.h"
 
@@ -31,37 +34,26 @@ public:
 		points.clear();
 	}
 
-	void DebugPoints() {
-		for (int p_index = 0; p_index < points.size() ; p_index++)
-		{
-			glm::vec2& p = points[p_index];
-			std::cout << 'p' << p_index << '(' << p.x << ", " << p.y << ')' << std::endl;
-		}
-		std::cout << std::endl << std::endl << std::endl;
-	}
-
-	std::vector<glm::vec2> GetCurvePoints() {
+	std::vector<glm::vec2> GetCurve() {
 		std::vector<glm::vec2> curvePoints;
 
 		float curveStart = points[0].x;
 		float curveEnd = points[points.size() - 1].x;
 		
-		float accuracy = 10.0f;
+		//specifies how many points will be made
+		float accuracy = 5.0f;
 		float currentPoint = curveStart;
 		while (currentPoint < curveEnd)
 		{
 			float t = (currentPoint - curveStart) / (curveEnd - curveStart);
 
-			if (t > 1)
-				t = 1;
-			if (t < 0)
-				t = 0;
+			int n = points.size() - 1;
+			float y = 0.0f;
 
-			float p0 = points[0].y;
-			float p1 = points[1].y;
-			float p2 = points[2].y;
-
-			float y = (1 - t) *((1 - t) * p0 + t * p1) + t * ( (1 - t) * p1 + t * p2);
+			for (int i = 0; i <= n; i++)
+			{
+				y += BinomialCoefficiant(n, i) * pow(1 - t, n - i) * pow(t, i) * points[i].y;
+			}
 
 			curvePoints.push_back(glm::vec2(currentPoint, y));
 			currentPoint += accuracy;
@@ -82,85 +74,77 @@ int main ()
 		std::cout << "Error : could not initilize GLFW";
 	int width = 1000;
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 	window = glfwCreateWindow(width, width * 9/16, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		std::cout << "Error : could not create window";
 		glfwTerminate();
 	}
-
 	glfwMakeContextCurrent(window);
-
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		std::cout << "Error : could not initilize Glad";
-
-	BezierCurve curve;
 
 	glfwSwapInterval(1);
 
 	bool mouseHeld = false;
 
-	FT_Library  library;
-
-	auto error = FT_Init_FreeType(&library);
-	if (error)
-	{
-		std::cout << "Error : could not initilize freetype";
-	}
-
-	FT_Face face;
-	if (FT_New_Face(library, "../../fonts/arial.ttf", 0, &face))
-		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-
-	InitTextRendering(face);
+	InitTextRendering();
 	InitCircleRendering(32);
 	InitLineRendering();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-	glClearColor(0.1f, 0.1f, 0.1f, 1);
+	BezierCurve curve;
 	while (!glfwWindowShouldClose(window))
 	{
-		// Check and call events
 		glfwPollEvents();
 
-		// Clear the colorbuffer
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//RenderText("Hello", 100, 100, 1, glm::vec3(1.0f, 1.0f, 1.0f));
+		RenderText("Press C to clear points", 25, 525, 0.5, glm::vec3(1.0f, 1.0f, 1.0f));
 
-		for(glm::vec2& vec : curve.points)
+		for (glm::vec2& vec : curve.points) {
 			RenderCircle(glm::vec2(vec.x, vec.y), 5);
+		}
 
-		if (curve.points.size() > 2)
-			RenderLine(curve.GetCurvePoints());
+		for (int i = 0; i < curve.points.size(); i++)
+		{
+			std::ostringstream xStream;
+			xStream << std::fixed;
+			xStream << std::setprecision(0);
+			xStream << curve.points[i].x;
+			std::string xValue = xStream.str();
 
-		// Swap the buffers
+			std::ostringstream yStream;
+			yStream << curve.points[i].y;
+			yStream << std::setprecision(0);
+			std::string yValue = yStream.str();
+
+			RenderText("p" + std::to_string(i) + " = (" + xValue + ", " + yValue + ")",
+						10, 200 - i * 20, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+		}
+
+		if (curve.points.size() > 1)
+			RenderLine(curve.GetCurve());
+
 		glfwSwapBuffers(window);
 
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && mouseHeld == false) {
-			double xpos, ypos;
-			glfwGetCursorPos(window, &xpos, &ypos);
-
-			if(curve.points.size() < 3)
+			if (curve.points.size() < 10){
+				double xpos, ypos;
+				glfwGetCursorPos(window, &xpos, &ypos);
 				curve.RegisterPoint(xpos, ypos);
-
+			}
 			mouseHeld = true;
 		}
 
 		if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
-		{
 			mouseHeld = true;
-		}
 		else
-		{
 			mouseHeld = false;
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_X))
-			curve.DebugPoints();
 
 		if (glfwGetKey(window, GLFW_KEY_C))
 			curve.ClearPoints();

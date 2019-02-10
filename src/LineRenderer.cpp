@@ -57,45 +57,7 @@ void InitLineRendering()
 
 	glUseProgram(0);
 
-
-	//float accuracy = 10.0f;
-	//
-	//std::vector<glm::vec2> vertices;
-	//vertices.reserve(20 * accuracy);
-	//accuracy = 1 / accuracy;
-	//
-	//float value = -10;
-	//int i = 0;
-	//
-	//while (value <= 10)
-	//{
-	//	vertices.emplace_back(value, evaluate(value));
-	//
-	//	i++;
-	//	value += accuracy;
-	//}
-	//m_VertexArray.init();
-	//VertexBufferLayout layout;
-	//layout.Push<float>(2);
-	//
-	//std::vector<unsigned short> indecies;
-	//indecies.reserve(vertices.size() * 2 + 10);
-	//for (size_t i = 0; i < vertices.size(); i++)
-	//{
-	//	if (i != vertices.size() - 1) {
-	//		indecies.push_back(i);
-	//		indecies.push_back(i + 1);
-	//	}
-	//}
-	//
-	//m_VertexBuffer.init(sizeof(vec2f) * vertices.size(), vertices.data());
-	//m_VertexBuffer.Bind();
-	//m_VertexArray.AddBuffer(m_VertexBuffer, layout);
-	//m_VertexArray.Bind();
-	//m_IndexBuffer.Init(sizeof(unsigned short) * indecies.size(), indecies.data());
-	//m_VertexArray.Unbind();
-
-
+	glEnable(GL_LINE_SMOOTH);
 }
 
 void RenderLine(std::vector<glm::vec2>& points)
