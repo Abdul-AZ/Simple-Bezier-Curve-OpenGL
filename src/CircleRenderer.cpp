@@ -10,37 +10,21 @@ static int VertexCountPerCicle = 0;
 void InitCircleRendering(int in_vertexCountPerCicle)
 {
 	VertexCountPerCicle = in_vertexCountPerCicle + 2;
-	const char* vShaderCode =
-		"#version 330 core\n"
-		"layout(location = 0) in vec2 aPos;\n"
-		"\n"
-		"uniform mat4 model;\n"
-		"uniform mat4 projection;\n"
-		"\n"
-		"void main()\n"
-		"{\n"
-		"	vec4 result = projection * model * vec4(aPos.x, aPos.y, 0.0f, 1.0f);\n"
-		"	gl_Position = result;\n"
-		"}\n";
 
-	const char * fShaderCode =
-		"#version 330 core\n"
-		"out vec4 FragColor;\n"
-		"\n"
-		"void main()\n"
-		"{\n"
-		"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-		"}\n";
+	std::string vShaderCode = ReadEntireTextFile("../../shaders/Circle.vert");
+	std::string fShaderCode = ReadEntireTextFile("../../shaders/Circle.frag");
 
 	// 2. compile shaders
 	unsigned int vertex, fragment;
 	// vertex shader
 	vertex = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex, 1, &vShaderCode, NULL);
+	const char* c_vShaderCode = vShaderCode.c_str();
+	glShaderSource(vertex, 1, &c_vShaderCode, NULL);
 	glCompileShader(vertex);
 	// fragment Shader
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment, 1, &fShaderCode, NULL);
+	const char* c_fShaderCode = fShaderCode.c_str();
+	glShaderSource(fragment, 1, &c_fShaderCode, NULL);
 	glCompileShader(fragment);
 	// shader Program
 	shaderID = glCreateProgram();

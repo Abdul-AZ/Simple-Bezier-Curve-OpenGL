@@ -8,39 +8,22 @@ static GLuint shaderID;
 
 void InitLineRendering()
 {
-	const char* vShaderCode =
-	"#version 330 core\n"
-	"layout(location = 0) in vec2 aPos;\n"
-	"\n"
-	"uniform mat4 projection;\n"
-	"\n"
-	"void main()\n"
-	"{\n"
-	"	vec4 result = projection * vec4(aPos.x, aPos.y, 0.0f, 1.0);\n"
-	"	gl_Position = result;\n"
-	"}";
-
-	const char * fShaderCode =
-	"#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"\n"
-	"uniform vec4 color;\n"
-	"\n"
-	"void main()\n"
-	"{\n"
-	"	FragColor = vec4(1.0,1.0,1.0,1.0);\n"
-	"}";
+	std::string vShaderCode = ReadEntireTextFile("../../shaders/Line.vert");
+	std::string fShaderCode = ReadEntireTextFile("../../shaders/Line.frag");
 
 	// 2. compile shaders
 	unsigned int vertex, fragment;
 	// vertex shader
 	vertex = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex, 1, &vShaderCode, NULL);
+	const char* c_vShaderCode = vShaderCode.c_str();
+	glShaderSource(vertex, 1, &c_vShaderCode, NULL);
 	glCompileShader(vertex);
 	// fragment Shader
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment, 1, &fShaderCode, NULL);
+	const char* c_fShaderCode = fShaderCode.c_str();
+	glShaderSource(fragment, 1, &c_fShaderCode, NULL);
 	glCompileShader(fragment);
+
 	// shader Program
 	shaderID = glCreateProgram();
 	glAttachShader(shaderID, vertex);

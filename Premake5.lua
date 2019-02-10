@@ -14,7 +14,7 @@ project "Simple-Bezier-Curve-OpenGL"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	  objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
-    files { "src/**.h", "src/**.cpp", "src/**.c", "src/**.vert", "src/**.frag" }
+    files { "src/**.h", "src/**.cpp", "src/**.c", "shaders/**.vert", "shaders/**.frag" }
     includedirs { "src/freetype", "src" }
 
     filter "configurations:Debug"
