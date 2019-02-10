@@ -7,6 +7,9 @@ All the Bezier Curve calculations are done in main.cpp via the formula (see http
 
 The other code is to show how to implement it and it's by no means good code because I had to keep it simple
 
+# Example
+![](https://github.com/AbdullrahmanAlzeidi/Simple-Bezier-Curve-OpenGL/blob/master/images/example.png?raw=true)
+
 
 # Building The Project
 The project is built using Premake5 (see https://github.com/premake/premake-core).
