@@ -13,7 +13,7 @@ std::map<GLchar, Character> Characters;
 static GLuint VAO;
 static GLuint VBO;
 
-static unsigned int shaderID;
+static GLuint shaderID;
 
 void InitTextRendering(FT_Face& face)
 {

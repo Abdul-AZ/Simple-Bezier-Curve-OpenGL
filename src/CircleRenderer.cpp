@@ -56,8 +56,7 @@ void InitCircleRendering(int in_vertexCountPerCicle)
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(1000), static_cast<GLfloat>(1000 * 9 / 16), 0.0f);
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-	using namespace glm;
-	glm::vec2* vertices = new vec2[VertexCountPerCicle];
+	glm::vec2* vertices = new glm::vec2[VertexCountPerCicle];
 
 	vertices[0].x = 0.0f;
 	vertices[0].y = 0.0f;

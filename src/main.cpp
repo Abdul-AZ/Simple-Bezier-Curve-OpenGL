@@ -6,6 +6,19 @@
 
 #include "TextRenderer.h"
 #include "CircleRenderer.h"
+#include "LineRenderer.h"
+
+int Factorial(int x) {
+	if (x > 1)
+		return x * Factorial(x - 1);
+	else
+		return 1;
+}
+
+int BinomialCoefficiant(int n, int k) 
+{
+	return Factorial(n) / (Factorial(k) * Factorial(n - k));
+}
 
 class BezierCurve {
 public:
@@ -25,6 +38,36 @@ public:
 			std::cout << 'p' << p_index << '(' << p.x << ", " << p.y << ')' << std::endl;
 		}
 		std::cout << std::endl << std::endl << std::endl;
+	}
+
+	std::vector<glm::vec2> GetCurvePoints() {
+		std::vector<glm::vec2> curvePoints;
+
+		float curveStart = points[0].x;
+		float curveEnd = points[points.size() - 1].x;
+		
+		float accuracy = 10.0f;
+		float currentPoint = curveStart;
+		while (currentPoint < curveEnd)
+		{
+			float t = (currentPoint - curveStart) / (curveEnd - curveStart);
+
+			if (t > 1)
+				t = 1;
+			if (t < 0)
+				t = 0;
+
+			float p0 = points[0].y;
+			float p1 = points[1].y;
+			float p2 = points[2].y;
+
+			float y = (1 - t) *((1 - t) * p0 + t * p1) + t * ( (1 - t) * p1 + t * p2);
+
+			curvePoints.push_back(glm::vec2(currentPoint, y));
+			currentPoint += accuracy;
+		}
+
+		return curvePoints;
 	}
 
 public:
@@ -71,6 +114,7 @@ int main ()
 
 	InitTextRendering(face);
 	InitCircleRendering(32);
+	InitLineRendering();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -90,13 +134,18 @@ int main ()
 		for(glm::vec2& vec : curve.points)
 			RenderCircle(glm::vec2(vec.x, vec.y), 5);
 
+		if (curve.points.size() > 2)
+			RenderLine(curve.GetCurvePoints());
+
 		// Swap the buffers
 		glfwSwapBuffers(window);
 
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && mouseHeld == false) {
 			double xpos, ypos;
 			glfwGetCursorPos(window, &xpos, &ypos);
-			curve.RegisterPoint(xpos, ypos);
+
+			if(curve.points.size() < 3)
+				curve.RegisterPoint(xpos, ypos);
 
 			mouseHeld = true;
 		}
@@ -119,5 +168,4 @@ int main ()
 
 	glfwTerminate();
 	return 0;
-
 }
