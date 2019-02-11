@@ -27,7 +27,6 @@ class BezierCurve {
 public:
 	void RegisterPoint(float x, float y) {
 		points.push_back({ x,y });
-		std::sort(points.begin(), points.end(), [](glm::vec2 a, glm::vec2 b) {return a.x < b.x; });
 	}
 
 	void ClearPoints() {
@@ -38,24 +37,33 @@ public:
 		std::vector<glm::vec2> curvePoints;
 
 		float curveStart = points[0].x;
-		float curveEnd = points[points.size() - 1].x;
+
+		float curveLength = 0.0f;
+
+		for (int i = 0; i < points.size() - 1; i++)
+		{
+			curveLength += abs(sqrt(pow(points[i + 1].x - points[i].x, 2) + pow(points[i + 1].y - points[i].y, 2)));
+		}
 		
 		//specifies how many points will be made
-		float accuracy = 5.0f;
-		float currentPoint = curveStart;
-		while (currentPoint < curveEnd)
+		float accuracy = 1.0f;
+
+		float currentPoint = 0.0f;
+		float currentCurveLength = 0.0f;
+
+		while (currentPoint < curveLength)
 		{
-			float t = (currentPoint - curveStart) / (curveEnd - curveStart);
+			float t = currentPoint / curveLength;
 
 			int n = points.size() - 1;
-			float y = 0.0f;
+			glm::vec2 point(0.0f,0.0f);
 
 			for (int i = 0; i <= n; i++)
 			{
-				y += BinomialCoefficiant(n, i) * pow(1 - t, n - i) * pow(t, i) * points[i].y;
+				point += (BinomialCoefficiant(n, i) * pow(1 - t, n - i) * pow(t, i))* points[i];
 			}
 
-			curvePoints.push_back(glm::vec2(currentPoint, y));
+			curvePoints.push_back(point);
 			currentPoint += accuracy;
 		}
 
@@ -129,6 +137,9 @@ int main ()
 
 		if (curve.points.size() > 1)
 			RenderLine(curve.GetCurve());
+		//if (curve.points.size() > 1)
+		//	RenderLine(curve.points);
+
 
 		glfwSwapBuffers(window);
 
